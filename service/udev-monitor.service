@@ -1,0 +1,17 @@
+[Unit]
+Description=Udev Monitor Logger
+DefaultDependencies=no
+After=systemd-udevd.service
+Before=sysinit.target basic.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/udev-monitor.sh
+Restart=always
+RestartSec=3
+# Ensures we survive early boot conditions
+StandardOutput=null
+StandardError=null
+
+[Install]
+WantedBy=sysinit.target

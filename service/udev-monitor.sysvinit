@@ -1,0 +1,33 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          udev-monitor
+# Required-Start:    udev
+# Required-Stop:     
+# Default-Start:     S
+# Default-Stop:      
+# Short-Description: Udev Monitor Logger
+### END INIT INFO
+
+PIDFILE=/var/run/udev-monitor.pid
+DAEMON=/usr/local/bin/udev-monitor.sh
+
+case "$1" in
+  start)
+    echo "Starting udev-monitor..."
+    start-stop-daemon --start --background --make-pidfile --pidfile $PIDFILE --exec $DAEMON
+    ;;
+  stop)
+    echo "Stopping udev-monitor..."
+    start-stop-daemon --stop --pidfile $PIDFILE
+    ;;
+  restart)
+    $0 stop
+    sleep 1
+    $0 start
+    ;;
+  *)
+    echo "Usage: $0 {start|stop|restart}"
+    exit 1
+    ;;
+esac
+exit 0
