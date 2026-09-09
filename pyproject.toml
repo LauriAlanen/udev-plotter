@@ -1,0 +1,20 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "udev-plotter"
+version = "0.1.0"
+description = "Visualize udevadm monitor logs as an interactive HTML report"
+readme = "README.md"
+requires-python = ">=3.8"
+license = { text = "MIT" }
+authors = [
+    { name = "Lauri Alanen" },
+]
+dependencies = [
+    "Jinja2>=3.0.0",
+]
+
+[project.scripts]
+udev-plotter = "udev_plotter.cli:main"

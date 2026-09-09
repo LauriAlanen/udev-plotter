@@ -14,13 +14,11 @@
 ## 2. Visualization & Analysis (Generator)
 **Goal:** Parse the raw log output and generate an interactive, self-contained report for human analysis.
 
-*   **Parser (`udev-plotter.py`):** A standalone Python script that reads the generated log file.
-    *   It uses regular expressions to parse the multiline event format of `udevadm monitor`.
-    *   It extracts key properties like timestamp, source (KERNEL/UDEV), action, device path, subsystem, sequence number, driver, etc.
-*   **Report Generator:** The parsed events are serialized to JSON and embedded directly into a static HTML template contained within `udev-plotter.py`.
-    *   The output is a single, self-contained HTML file requiring no external dependencies or internet connection.
-*   **Frontend UI:** The embedded HTML/JS/CSS provides:
-    *   Summary statistics.
-    *   Filterable bar charts for subsystems and actions.
-    *   An interactive timeline (swimlane) built with SVG.
-    *   A searchable and sortable data table of all events.
+*   **Python CLI Package (`udev_plotter`):** Distributed via PyPI for easy installation.
+    *   **Parser (`parser.py`):** Uses regular expressions to parse the multiline event format of `udevadm monitor` and extracts key properties (timestamp, source, action, subsystem, etc.).
+    *   **Report Generator (`cli.py`):** Serializes the parsed events to JSON and uses Jinja2 templating to generate the report.
+*   **Separated Frontend Assets (`templates/`):** 
+    *   HTML, CSS, and modern JavaScript are maintained in separate, clean files.
+    *   They are injected into a single, self-contained static HTML file by the CLI.
+    *   This guarantees **100% local execution and strict data confidentiality**—no logs are ever uploaded to a remote server.
+*   **Frontend UI:** Provides summary statistics, filterable bar charts, an interactive SVG timeline, and a searchable/sortable event table.
