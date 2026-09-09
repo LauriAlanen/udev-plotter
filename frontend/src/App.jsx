@@ -49,6 +49,31 @@ export default function App() {
     setActionFilter(next);
   };
 
+  const eventsForSubsystemFilter = useMemo(() => {
+    return EVENTS.filter(e => {
+      if (actionFilter.size && !actionFilter.has(e.action)) return false;
+      if (searchText) {
+        const hay = (e.devpath + ' ' + (e.driver||'') + ' ' + (e.iface||'') + ' ' + (e.subsystem||'')).toLowerCase();
+        if (!hay.includes(searchText)) return false;
+      }
+      return true;
+    });
+  }, [EVENTS, actionFilter, searchText]);
+
+  const eventsForActionFilter = useMemo(() => {
+    return EVENTS.filter(e => {
+      if (subsystemFilter && e.subsystem !== subsystemFilter) return false;
+      if (searchText) {
+        const hay = (e.devpath + ' ' + (e.driver||'') + ' ' + (e.iface||'') + ' ' + (e.subsystem||'')).toLowerCase();
+        if (!hay.includes(searchText)) return false;
+      }
+      return true;
+    });
+  }, [EVENTS, subsystemFilter, searchText]);
+
+  const availableSubsystems = useMemo(() => new Set(eventsForSubsystemFilter.map(e => e.subsystem)), [eventsForSubsystemFilter]);
+  const availableActions = useMemo(() => new Set(eventsForActionFilter.map(e => e.action)), [eventsForActionFilter]);
+
   const subsystemCounts = useMemo(() => counts(EVENTS, 'subsystem').slice(0, 20), [EVENTS]);
   const actionCounts = useMemo(() => counts(EVENTS, 'action'), [EVENTS]);
   const totalSubsystems = useMemo(() => new Set(EVENTS.map(e => e.subsystem)).size, [EVENTS]);
@@ -72,7 +97,8 @@ export default function App() {
             searchText={searchText} 
             setSearchText={setSearchText} 
             actionFilter={actionFilter} 
-            toggleAction={toggleAction} 
+            toggleAction={toggleAction}
+            availableActions={availableActions}
           />
         </div>
 
@@ -82,7 +108,8 @@ export default function App() {
             <BarChart 
               data={subsystemCounts} 
               colorFn={() => '#3b82f6'} 
-              activeKey={subsystemFilter} 
+              activeKey={subsystemFilter}
+              availableSet={availableSubsystems}
               onClick={(label) => setSubsystemFilter(prev => prev === label ? null : label)} 
             />
           </div>
@@ -91,7 +118,8 @@ export default function App() {
             <BarChart 
               data={actionCounts} 
               colorFn={colorFor} 
-              activeKey={actionFilter.size === 1 ? [...actionFilter][0] : null} 
+              activeKey={actionFilter.size === 1 ? [...actionFilter][0] : null}
+              availableSet={availableActions}
               onClick={toggleAction} 
             />
           </div>

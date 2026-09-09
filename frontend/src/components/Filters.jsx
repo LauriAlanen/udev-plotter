@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { colorFor } from '../App.jsx';
 
-export default function Filters({ events, searchText, setSearchText, actionFilter, toggleAction }) {
+export default function Filters({ events, searchText, setSearchText, actionFilter, toggleAction, availableActions }) {
   const allActions = useMemo(() => [...new Set(events.map(e => e.action))].sort(), [events]);
 
   return (
@@ -15,15 +15,21 @@ export default function Filters({ events, searchText, setSearchText, actionFilte
       <div className="chip-group">
         {allActions.map(a => {
           const active = actionFilter.has(a);
+          const isAvailable = !availableActions || availableActions.has(a);
           return (
             <span 
               key={a}
               className={`chip ${active ? 'active' : ''}`}
               style={{
                 borderColor: colorFor(a),
-                background: active ? colorFor(a) : 'transparent'
+                background: active ? colorFor(a) : 'transparent',
+                opacity: isAvailable ? 1 : 0.4,
+                cursor: isAvailable ? 'pointer' : 'default',
+                pointerEvents: isAvailable ? 'auto' : 'none'
               }}
-              onClick={() => toggleAction(a)}
+              onClick={() => {
+                if (isAvailable) toggleAction(a);
+              }}
             >
               {a}
             </span>
