@@ -1,8 +1,25 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useRef, useEffect } from 'react';
 import { colorFor } from '../App.jsx';
+
+function useContainerWidth() {
+  const ref = useRef(null);
+  const [width, setWidth] = useState(900);
+  useEffect(() => {
+    if (!ref.current) return;
+    const observer = new ResizeObserver(entries => {
+      if (entries[0] && entries[0].contentRect.width > 0) {
+        setWidth(entries[0].contentRect.width);
+      }
+    });
+    observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, []);
+  return [ref, width];
+}
 
 export default function Timeline({ events, meta }) {
   const [tooltip, setTooltip] = useState(null);
+  const [ref, w] = useContainerWidth();
   
   const { subsystems, yIndex, height } = useMemo(() => {
     const subs = [...new Set(events.map(e => e.subsystem || '(none)'))].sort();
@@ -12,14 +29,13 @@ export default function Timeline({ events, meta }) {
     return { subsystems: subs, yIndex: yIdx, height: h, pad, rowH };
   }, [events]);
 
-  const w = 900;
   const pad = { l: 190, r: 20, t: 10, b: 24 };
   const t0 = meta.start, t1 = meta.end;
   const span = Math.max(t1 - t0, 0.001);
   const xw = w - pad.l - pad.r;
 
   return (
-    <>
+    <div ref={ref} style={{ width: '100%' }}>
       <svg viewBox={`0 0 ${w} ${height}`} width="100%" height={height}>
         {subsystems.map((sub) => {
           const y = yIndex.get(sub);
@@ -64,6 +80,6 @@ export default function Timeline({ events, meta }) {
           {tooltip.content}
         </div>
       )}
-    </>
+    </div>
   );
 }
