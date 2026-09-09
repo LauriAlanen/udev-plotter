@@ -13,7 +13,6 @@ authors = [
     { name = "Lauri Alanen" },
 ]
 dependencies = [
-    "Jinja2>=3.0.0",
 ]
 
 [project.scripts]

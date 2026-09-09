@@ -32,3 +32,5 @@ ENV/
 # OS generated files
 .DS_Store
 Thumbs.db
+node_modules/
+udev-boot-monitor.html

@@ -1,8 +1,8 @@
 import argparse
 import json
 import webbrowser
+import re
 from pathlib import Path
-from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 from udev_plotter.parser import parse_log
 
@@ -20,19 +20,11 @@ def main():
 
     out_path = Path(args.output) if args.output else log_path.with_suffix('.html')
     
-    template_dir = Path(__file__).parent / 'templates'
+    template_path = Path(__file__).parent / 'frontend_dist' / 'index.html'
+    if not template_path.exists():
+        raise SystemExit(f"Frontend build not found at {template_path}. Please build the frontend.")
     
-    # Render with Jinja2
-    env = Environment(
-        loader=FileSystemLoader(str(template_dir)),
-        autoescape=select_autoescape(['html', 'xml'])
-    )
-    
-    # Load separate JS and CSS files to inject
-    css_content = (template_dir / 'style.css').read_text()
-    js_content = (template_dir / 'script.js').read_text()
-    
-    template = env.get_template("index.html.j2")
+    html = template_path.read_text(encoding='utf-8')
     
     meta = {
         'title': log_path.name,
@@ -41,18 +33,13 @@ def main():
         'end': events[-1]['t'] if events else 0,
     }
     
-    # Serialize JSON safely
     events_json = json.dumps(events, separators=(',', ':')).replace('</', '<\\/')
     meta_json = json.dumps(meta).replace('</', '<\\/')
     
-    html = template.render(
-        css_content=css_content,
-        js_content=js_content,
-        events_json=events_json,
-        meta_json=meta_json
-    )
+    html = re.sub(r'/\*UDEV_EVENTS\*/.*/\*UDEV_EVENTS\*/', events_json, html, count=1)
+    html = re.sub(r'/\*UDEV_META\*/.*/\*UDEV_META\*/', meta_json, html, count=1)
     
-    out_path.write_text(html)
+    out_path.write_text(html, encoding='utf-8')
     print(f'Parsed {len(events)} events -> {out_path}')
 
     if not args.no_open:

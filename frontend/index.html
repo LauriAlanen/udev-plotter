@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>udev event report</title>
+</head>
+<body>
+  <div id="root"></div>
+  <!-- Data injected by udev-plotter Python backend -->
+  <script>
+    window.__UDEV_DATA__ = {
+      events: /*UDEV_EVENTS*/[]/*UDEV_EVENTS*/,
+      meta: /*UDEV_META*/{"title":"development","count":0,"start":0,"end":0}/*UDEV_META*/
+    };
+  </script>
+  <script type="module" src="/src/main.jsx"></script>
+</body>
+</html>
