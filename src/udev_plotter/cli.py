@@ -9,7 +9,7 @@ from udev_plotter.parser import parse_log
 def main():
     ap = argparse.ArgumentParser(description="Parse a udevadm monitor log and render it as an interactive HTML report.")
     ap.add_argument('logfile', help='path to the udevadm monitor log file')
-    ap.add_argument('-o', '--output', help='output HTML path (default: <logfile>.html)')
+    ap.add_argument('-o', '--output', help='output HTML path (default: output/<logfile>.html)')
     ap.add_argument('--no-open', action='store_true', help='do not open the report in a browser')
     args = ap.parse_args()
 
@@ -18,7 +18,11 @@ def main():
     if not events:
         raise SystemExit(f'No udev/kernel events found in {log_path}')
 
-    out_path = Path(args.output) if args.output else log_path.with_suffix('.html')
+    if args.output:
+        out_path = Path(args.output)
+    else:
+        out_path = Path('output') / log_path.with_suffix('.html').name
+        out_path.parent.mkdir(parents=True, exist_ok=True)
     
     template_path = Path(__file__).parent / 'frontend_dist' / 'index.html'
     if not template_path.exists():

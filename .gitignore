@@ -1,6 +1,6 @@
-# Log files and test artifacts
+# Log files and  artifacts
 *.log
-udev-boot-monitor.log
+output/
 
 # Python cache and compiled files
 __pycache__/
@@ -34,3 +34,4 @@ ENV/
 Thumbs.db
 node_modules/
 udev-boot-monitor.html
+!logs/example.log
