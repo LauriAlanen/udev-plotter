@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function BarChart({ data, colorFn, activeKey, availableSet, onClick }) {
+export default function BarChart({ data, colorFn, activeKey, activeSet, availableSet, onClick }) {
   const max = data.length ? data[0][1] : 1;
   
   return (
@@ -8,9 +8,14 @@ export default function BarChart({ data, colorFn, activeKey, availableSet, onCli
       {data.map(([label, count]) => {
         const pct = (count / max * 100).toFixed(1);
         const isAvailable = !availableSet || availableSet.has(label);
-        let opacity = (activeKey && label !== activeKey) ? 0.45 : 1;
-        if (!isAvailable && !activeKey) opacity = 0.2; // Dim unavailable items
-        if (!isAvailable && activeKey) opacity = 0.1;
+        const active = (activeSet ? activeSet.has(label) : label === activeKey);
+        const isOnlyAvailable = isAvailable && availableSet && availableSet.size === 1 && !active;
+        const isClickable = active || (isAvailable && !isOnlyAvailable);
+        
+        const hasActive = activeSet ? activeSet.size > 0 : !!activeKey;
+        let opacity = (hasActive && !active) ? 0.45 : 1;
+        if (!isAvailable && !hasActive) opacity = 0.2; // Dim unavailable items
+        if (!isAvailable && hasActive) opacity = 0.1;
         
         return (
           <div 
@@ -18,11 +23,11 @@ export default function BarChart({ data, colorFn, activeKey, availableSet, onCli
             className="bar-row" 
             style={{ 
               opacity, 
-              cursor: isAvailable ? 'pointer' : 'default',
-              pointerEvents: isAvailable ? 'auto' : 'none'
+              cursor: isClickable ? 'pointer' : 'default',
+              pointerEvents: isClickable ? 'auto' : 'none'
             }} 
             onClick={() => {
-              if (isAvailable) onClick(label);
+              if (isClickable) onClick(label);
             }}
           >
             <div className="bar-label" title={label}>{label}</div>

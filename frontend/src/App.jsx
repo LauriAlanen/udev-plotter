@@ -118,7 +118,7 @@ export default function App() {
             <BarChart 
               data={actionCounts} 
               colorFn={colorFor} 
-              activeKey={actionFilter.size === 1 ? [...actionFilter][0] : null}
+              activeSet={actionFilter}
               availableSet={availableActions}
               onClick={toggleAction} 
             />

@@ -16,6 +16,9 @@ export default function Filters({ events, searchText, setSearchText, actionFilte
         {allActions.map(a => {
           const active = actionFilter.has(a);
           const isAvailable = !availableActions || availableActions.has(a);
+          const isOnlyAvailable = isAvailable && availableActions && availableActions.size === 1 && !active;
+          const isClickable = active || (isAvailable && !isOnlyAvailable);
+          
           return (
             <span 
               key={a}
@@ -24,11 +27,11 @@ export default function Filters({ events, searchText, setSearchText, actionFilte
                 borderColor: colorFor(a),
                 background: active ? colorFor(a) : 'transparent',
                 opacity: isAvailable ? 1 : 0.4,
-                cursor: isAvailable ? 'pointer' : 'default',
-                pointerEvents: isAvailable ? 'auto' : 'none'
+                cursor: isClickable ? 'pointer' : 'default',
+                pointerEvents: isClickable ? 'auto' : 'none'
               }}
               onClick={() => {
-                if (isAvailable) toggleAction(a);
+                if (isClickable) toggleAction(a);
               }}
             >
               {a}
