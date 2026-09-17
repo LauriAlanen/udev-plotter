@@ -1,17 +1,30 @@
 import React, { useMemo } from 'react';
 import { colorFor } from '../App.jsx';
 
-export default function Filters({ events, searchText, setSearchText, actionFilter, toggleAction, availableActions }) {
+export default function Filters({ events, searchText, setSearchText, actionFilter, toggleAction, availableActions, srcFilter, setSrcFilter }) {
   const allActions = useMemo(() => [...new Set(events.map(e => e.action))].sort(), [events]);
 
   return (
     <div className="controls">
-      <input 
-        type="text" 
-        placeholder="Search devpath / driver / interface..." 
-        value={searchText}
-        onChange={e => setSearchText(e.target.value)}
-      />
+      <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center' }}>
+        <input 
+          type="text" 
+          placeholder="Search devpath / driver / interface..." 
+          value={searchText}
+          onChange={e => setSearchText(e.target.value)}
+        />
+        <div className="segmented-control">
+          {['ALL', 'KERNEL', 'UDEV'].map(src => (
+            <button
+              key={src}
+              className={srcFilter === src ? 'active' : ''}
+              onClick={() => setSrcFilter(src)}
+            >
+              {src === 'ALL' ? 'Both' : src}
+            </button>
+          ))}
+        </div>
+      </div>
       <div className="chip-group">
         {allActions.map(a => {
           const active = actionFilter.has(a);

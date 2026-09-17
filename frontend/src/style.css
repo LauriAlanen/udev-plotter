@@ -35,3 +35,31 @@ td.devpath { white-space: normal; word-break: break-all; }
 .action-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 5px; }
 .muted { color: var(--muted); }
 .count-badge { color: var(--muted); font-size: 11px; margin-left: 8px; }
+.segmented-control {
+  display: flex;
+  background: #0d0f13;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 3px;
+  gap: 2px;
+}
+.segmented-control button {
+  background: transparent;
+  color: var(--muted);
+  border: none;
+  padding: 5px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 500;
+  transition: all 0.15s ease;
+  font-family: inherit;
+}
+.segmented-control button:hover {
+  color: var(--text);
+}
+.segmented-control button.active {
+  background: var(--panel);
+  color: var(--text);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.4);
+}

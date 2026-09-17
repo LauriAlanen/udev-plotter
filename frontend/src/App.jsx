@@ -29,9 +29,11 @@ export default function App() {
   const [subsystemFilter, setSubsystemFilter] = useState(null);
   const [actionFilter, setActionFilter] = useState(new Set());
   const [searchText, setSearchText] = useState('');
+  const [srcFilter, setSrcFilter] = useState('ALL'); // 'ALL', 'KERNEL', 'UDEV'
 
   const filteredEvents = useMemo(() => {
     return EVENTS.filter(e => {
+      if (srcFilter !== 'ALL' && e.src !== srcFilter) return false;
       if (subsystemFilter && e.subsystem !== subsystemFilter) return false;
       if (actionFilter.size && !actionFilter.has(e.action)) return false;
       if (searchText) {
@@ -40,7 +42,7 @@ export default function App() {
       }
       return true;
     });
-  }, [EVENTS, subsystemFilter, actionFilter, searchText]);
+  }, [EVENTS, srcFilter, subsystemFilter, actionFilter, searchText]);
 
   const toggleAction = (a) => {
     const next = new Set(actionFilter);
@@ -51,6 +53,7 @@ export default function App() {
 
   const eventsForSubsystemFilter = useMemo(() => {
     return EVENTS.filter(e => {
+      if (srcFilter !== 'ALL' && e.src !== srcFilter) return false;
       if (actionFilter.size && !actionFilter.has(e.action)) return false;
       if (searchText) {
         const hay = (e.devpath + ' ' + (e.driver||'') + ' ' + (e.iface||'') + ' ' + (e.subsystem||'')).toLowerCase();
@@ -58,10 +61,11 @@ export default function App() {
       }
       return true;
     });
-  }, [EVENTS, actionFilter, searchText]);
+  }, [EVENTS, srcFilter, actionFilter, searchText]);
 
   const eventsForActionFilter = useMemo(() => {
     return EVENTS.filter(e => {
+      if (srcFilter !== 'ALL' && e.src !== srcFilter) return false;
       if (subsystemFilter && e.subsystem !== subsystemFilter) return false;
       if (searchText) {
         const hay = (e.devpath + ' ' + (e.driver||'') + ' ' + (e.iface||'') + ' ' + (e.subsystem||'')).toLowerCase();
@@ -69,7 +73,7 @@ export default function App() {
       }
       return true;
     });
-  }, [EVENTS, subsystemFilter, searchText]);
+  }, [EVENTS, srcFilter, subsystemFilter, searchText]);
 
   const availableSubsystems = useMemo(() => new Set(eventsForSubsystemFilter.map(e => e.subsystem)), [eventsForSubsystemFilter]);
   const availableActions = useMemo(() => new Set(eventsForActionFilter.map(e => e.action)), [eventsForActionFilter]);
@@ -99,6 +103,8 @@ export default function App() {
             actionFilter={actionFilter} 
             toggleAction={toggleAction}
             availableActions={availableActions}
+            srcFilter={srcFilter}
+            setSrcFilter={setSrcFilter}
           />
         </div>
 
