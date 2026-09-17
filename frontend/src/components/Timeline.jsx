@@ -23,6 +23,8 @@ export default function Timeline({ events, meta }) {
   const svgRef = useRef(null);
   
   const [viewDomain, setViewDomain] = useState([meta.start, meta.end]);
+  const [showCtrlPrompt, setShowCtrlPrompt] = useState(false);
+  const promptTimeout = useRef(null);
   
   // Reset zoom if meta bounds change significantly
   useEffect(() => {
@@ -47,7 +49,17 @@ export default function Timeline({ events, meta }) {
     if (!el) return;
     
     const handleWheel = (e) => {
+      // Require Ctrl/Cmd to zoom, otherwise allow normal page scroll
+      if (!e.ctrlKey && !e.metaKey) {
+        setShowCtrlPrompt(true);
+        if (promptTimeout.current) clearTimeout(promptTimeout.current);
+        promptTimeout.current = setTimeout(() => setShowCtrlPrompt(false), 1500);
+        return;
+      }
+      
+      setShowCtrlPrompt(false);
       e.preventDefault();
+      
       const rect = el.getBoundingClientRect();
       const mouseX = e.clientX - rect.left - pad.l;
       
@@ -131,6 +143,16 @@ export default function Timeline({ events, meta }) {
 
   return (
     <div ref={ref} style={{ width: '100%', position: 'relative' }}>
+      {showCtrlPrompt && (
+        <div style={{
+          position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
+          background: 'rgba(0, 0, 0, 0.75)', color: 'white', padding: '12px 24px', 
+          borderRadius: '8px', pointerEvents: 'none', zIndex: 20, 
+          fontSize: '14px', fontWeight: 'bold', boxShadow: '0 4px 6px rgba(0,0,0,0.3)'
+        }}>
+          Use Ctrl + scroll to zoom the timeline
+        </div>
+      )}
       {isZoomed && (
         <button 
           onClick={() => setViewDomain([meta.start, meta.end])}
