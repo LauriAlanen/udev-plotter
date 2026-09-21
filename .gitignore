@@ -34,4 +34,4 @@ ENV/
 Thumbs.db
 node_modules/
 udev-boot-monitor.html
-!logs/example.log
+
